@@ -81,7 +81,6 @@ function getPerfAmount(performances, plays) {
       seats: perf.audience
     };
     perfAmount.push(performance);
-    //result += ` ${play.name}: ${formatAmount(thisAmount)} (${perf.audience} seats)\n`;
   }
   return perfAmount;
 }
@@ -100,7 +99,6 @@ function printHtml(data) {
       + `<tr><th>play</th><th>seats</th><th>cost</th></tr>`
       + data.performances.map(performance => {
         return ` <tr><td>${performance.name}</td><td>${performance.seats}</td><td>${performance.amount}</td></tr>\n`
-        //console.log(performance)
       }).join('')
       + `</table>\n`
       + `<p>Amount owed is <em>${data.amount}</em></p>\n`
@@ -111,17 +109,12 @@ function printString(data) {
   return `Statement for ${data.customer}\n`
       + data.performances.map(performance => {
         return ` ${performance.name}: ${performance.amount} (${performance.seats} seats)\n`
-        //console.log(performance)
       }).join('')
       + `Amount owed is ${data.amount}\n`
       + `You earned ${data.credits} credits \n`
 }
 
 function statement (invoice, plays) {
-  // let result = `Statement for ${invoice.customer}\n`;
-  // result += getPerfAmount(invoice.performances, plays);
-  // result += `Amount owed is ${formatAmount(calculateTotalAmount(invoice.performances, plays))}\n`;
-  // result += `You earned ${calculateVolumeCredits(invoice.performances, plays)} credits \n`;
   return printString(getStatementResult(invoice, plays));
 }
 
