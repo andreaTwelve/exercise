@@ -154,14 +154,14 @@ test('the audience of hamlet is 29 test', t => {
   );
 });
 
-test('the audience of as-like is 19 test', t => {
+test('the audience of as-like is 20 test', t => {
   //given
   const invoice = {
     'customer': 'BigCo',
     'performances': [
       {
         'playID': 'as-like',
-        'audience': 19,
+        'audience': 20,
       }
     ],
   };
@@ -183,10 +183,43 @@ test('the audience of as-like is 19 test', t => {
   const result = statement(invoice, plays);
   //then
   t.is(result, 'Statement for BigCo\n' +
-      ' As You Like It: $357.00 (19 seats)\n' +
-      'Amount owed is $357.00\n' +
-      'You earned 3 credits \n'
+      ' As You Like It: $360.00 (20 seats)\n' +
+      'Amount owed is $360.00\n' +
+      'You earned 4 credits \n'
   );
+});
+
+test('unknown type: tragedy1', t => {
+  //given
+  const invoice = {
+    'customer': 'BigCo',
+    'performances': [
+      {
+        'playID': 'othello',
+        'audience': 20,
+      }
+    ],
+  };
+  const plays = {
+    'hamlet': {
+      'name': 'Hamlet',
+      'type': 'tragedy',
+    },
+    'as-like': {
+      'name': 'As You Like It',
+      'type': 'comedy',
+    },
+    'othello': {
+      'name': 'Othello',
+      'type': 'tragedy1',
+    },
+  };
+  try {
+    statement(invoice, plays);
+    t.fail();
+  } catch (e) {
+    t.is(e.message, 'unknown type: tragedy1');
+  }
 });
 
 
