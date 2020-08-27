@@ -26,13 +26,15 @@ function getTragedyAmount(thisAmount, perf) {
   return thisAmount;
 }
 
-function getComedyAmount(thisAmount, perf) {
-  thisAmount = 30000;
-  if (perf.audience > 20) {
-    thisAmount += 10000 + 500 * (perf.audience - 20);
-  }
-  thisAmount += 300 * perf.audience;
-  return thisAmount;
+function getAmountedOwner(result, totalAmount, volumeCredits) {
+  result += `Amount owed is ${formatAmount(totalAmount)}\n`;
+  result += `You earned ${volumeCredits} credits \n`;
+  return result;
+}
+
+function getPerfAmount(result, play, thisAmount, perf) {
+  result += ` ${play.name}: ${formatAmount(thisAmount)} (${perf.audience} seats)\n`;
+  return result;
 }
 
 function statement (invoice, plays) {
@@ -48,7 +50,11 @@ function statement (invoice, plays) {
         thisAmount = getTragedyAmount(thisAmount, perf);
         break;
       case 'comedy':
-        thisAmount = getComedyAmount(thisAmount, perf);
+        thisAmount = 30000;
+        if (perf.audience > 20) {
+          thisAmount += 10000 + 500 * (perf.audience - 20);
+        }
+        thisAmount += 300 * perf.audience;
         break;
       default:
         throw new Error(`unknown type: ${play.type}`);
@@ -56,10 +62,9 @@ function statement (invoice, plays) {
     volumeCredits = getVolumeCredits(volumeCredits, perf, play);
     totalAmount += thisAmount;
     //print line for this order
-    result += ` ${play.name}: ${formatAmount(thisAmount)} (${perf.audience} seats)\n`;
+    result = getPerfAmount(result, play, thisAmount, perf);
   }
-  result += `Amount owed is ${formatAmount(totalAmount)}\n`;
-  result += `You earned ${volumeCredits} credits \n`;
+  result = getAmountedOwner(result, totalAmount, volumeCredits);
   return result;
 }
 
