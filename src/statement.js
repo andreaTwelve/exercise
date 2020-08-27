@@ -96,7 +96,15 @@ function getStatementResult(invoice, plays) {
 }
 
 function printHtml(data) {
-  return `<h1>Statement for ${data.customer}</h1>\n`
+  return `<h1>Statement for ${data.customer}</h1>\n` + `<table>\n`
+      + `<tr><th>play</th><th>seats</th><th>cost</th></tr>`
+      + data.performances.map(performance => {
+        return ` <tr><td>${performance.name}</td><td>${performance.seats}</td><td>${performance.amount}</td></tr>\n`
+        //console.log(performance)
+      }).join('')
+      + `</table>\n`
+      + `<p>Amount owed is <em>${data.amount}</em></p>\n`
+      + `<p>You earned <em>${data.credits}</em> credits</p>\n`;
 }
 
 function printString(data) {
@@ -117,6 +125,11 @@ function statement (invoice, plays) {
   return printString(getStatementResult(invoice, plays));
 }
 
+function statementByHtml (invoice, plays) {
+  return printHtml(getStatementResult(invoice, plays));
+}
+
 module.exports = {
   statement,
+  statementByHtml
 };
