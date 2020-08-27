@@ -84,3 +84,38 @@ test('the audience of hamlet is 30 test', t => {
 );
 });
 
+test('the audience of hamlet is 31 test', t => {
+  //given
+  const invoice = {
+    'customer': 'BigCo',
+    'performances': [
+      {
+        'playID': 'hamlet',
+        'audience': 31,
+      }
+    ],
+  };
+  const plays = {
+    'hamlet': {
+      'name': 'Hamlet',
+      'type': 'tragedy',
+    },
+    'as-like': {
+      'name': 'As You Like It',
+      'type': 'comedy',
+    },
+    'othello': {
+      'name': 'Othello',
+      'type': 'tragedy',
+    },
+  };
+  //when
+  const result = statement(invoice, plays);
+  //then
+  t.is(result, 'Statement for BigCo\n' +
+      ' Hamlet: $410.00 (31 seats)\n' +
+      'Amount owed is $410.00\n' +
+      'You earned 1 credits \n'
+  );
+});
+
