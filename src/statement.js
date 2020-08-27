@@ -18,6 +18,14 @@ function getPlay(plays, perf) {
   return plays[perf.playID];
 }
 
+function getTragedyAmount(thisAmount, perf) {
+  thisAmount = 40000;
+  if (perf.audience > 30) {
+    thisAmount += 1000 * (perf.audience - 30);
+  }
+  return thisAmount;
+}
+
 function statement (invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
@@ -28,10 +36,7 @@ function statement (invoice, plays) {
     let thisAmount = 0;
     switch (play.type) {
       case 'tragedy':
-        thisAmount = 40000;
-        if (perf.audience > 30) {
-          thisAmount += 1000 * (perf.audience - 30);
-        }
+        thisAmount = getTragedyAmount(thisAmount, perf);
         break;
       case 'comedy':
         thisAmount = 30000;
