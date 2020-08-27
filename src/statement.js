@@ -18,18 +18,45 @@ function getPlay(plays, perf) {
   return plays[perf.playID];
 }
 
-function getTragedyAmount(thisAmount, perf) {
-  thisAmount = 40000;
+function getTragedyAmount(perf) {
+  let thisAmount = 40000;
   if (perf.audience > 30) {
     thisAmount += 1000 * (perf.audience - 30);
   }
   return thisAmount;
 }
 
-function getAmountedOwner(result, totalAmount, volumeCredits) {
-  result += `Amount owed is ${formatAmount(totalAmount)}\n`;
-  result += `You earned ${volumeCredits} credits \n`;
-  return result;
+function getComedyAmount(perf) {
+  let thisAmount = 30000;
+  if (perf.audience > 20) {
+    thisAmount += 10000 + 500 * (perf.audience - 20);
+  }
+  thisAmount += 300 * perf.audience;
+  return thisAmount;
+}
+
+function calculateAmount(type, perf) {
+  switch (type) {
+    case 'tragedy':
+      return getTragedyAmount(perf);
+      //break;
+    case 'comedy':
+      return getComedyAmount(perf);
+      //break;
+    default:
+      throw new Error(`unknown type: ${type}`);
+  }
+}
+
+function calculateVolumeCredits(performances, plays) {
+  let volumeCredits = 0;
+  for (let perf of performances) {
+    const play = getPlay(plays, perf);
+    volumeCredits += Math.max(perf.audience - 30, 0);
+    // add extra credit for every ten comedy attendees
+    if ('comedy' === play.type) volumeCredits += Math.floor(perf.audience / 5);
+  }
+  return volumeCredits
 }
 
 function getPerfAmount(result, play, thisAmount, perf) {
@@ -38,33 +65,20 @@ function getPerfAmount(result, play, thisAmount, perf) {
 }
 
 function statement (invoice, plays) {
+  let result = `Statement for ${invoice.customer}\n`;
   let totalAmount = 0;
   let volumeCredits = 0;
-  let result = `Statement for ${invoice.customer}\n`;
 
   for (let perf of invoice.performances) {
     const play = getPlay(plays, perf);
-    let thisAmount = 0;
-    switch (play.type) {
-      case 'tragedy':
-        thisAmount = getTragedyAmount(thisAmount, perf);
-        break;
-      case 'comedy':
-        thisAmount = 30000;
-        if (perf.audience > 20) {
-          thisAmount += 10000 + 500 * (perf.audience - 20);
-        }
-        thisAmount += 300 * perf.audience;
-        break;
-      default:
-        throw new Error(`unknown type: ${play.type}`);
-    }
-    volumeCredits = getVolumeCredits(volumeCredits, perf, play);
+    let thisAmount = calculateAmount(play.type, perf);
     totalAmount += thisAmount;
+    volumeCredits = getVolumeCredits(volumeCredits, perf, play);
     //print line for this order
     result = getPerfAmount(result, play, thisAmount, perf);
   }
-  result = getAmountedOwner(result, totalAmount, volumeCredits);
+  result += `Amount owed is ${formatAmount(totalAmount)}\n`;
+  result += `You earned ${calculateVolumeCredits(invoice.performances, plays)} credits \n`;
   return result;
 }
 
