@@ -69,27 +69,52 @@ function calculateTotalAmount(performances, plays) {
   return totalAmount;
 }
 
-function getPerfAmount(result, play, thisAmount, perf) {
-  result += ` ${play.name}: ${formatAmount(thisAmount)} (${perf.audience} seats)\n`;
-  return result;
+function getPerfAmount(performances, plays) {
+  let result = '';
+  let perfAmount = [];
+  for (let perf of performances) {
+    const play = getPlay(plays, perf);
+    let thisAmount = calculateAmount(play.type, perf);
+    let performance = {
+      name: play.name,
+      amount: formatAmount(thisAmount),
+      seats: perf.audience
+    };
+    perfAmount.push(performance);
+    //result += ` ${play.name}: ${formatAmount(thisAmount)} (${perf.audience} seats)\n`;
+  }
+  return perfAmount;
+}
+
+function getStatementResult(invoice, plays) {
+  return {
+    customer: invoice.customer,
+    performances: getPerfAmount(invoice.performances, plays),
+    amount: formatAmount(calculateTotalAmount(invoice.performances, plays)),
+    credits: calculateVolumeCredits(invoice.performances, plays)
+  }
+}
+
+function printHtml(data) {
+  return `<h1>Statement for ${data.customer}</h1>\n`
+}
+
+function printString(data) {
+  return `Statement for ${data.customer}\n`
+      + data.performances.map(performance => {
+        return ` ${performance.name}: ${performance.amount} (${performance.seats} seats)\n`
+        //console.log(performance)
+      }).join('')
+      + `Amount owed is ${data.amount}\n`
+      + `You earned ${data.credits} credits \n`
 }
 
 function statement (invoice, plays) {
-  let result = `Statement for ${invoice.customer}\n`;
-  let totalAmount = 0;
-  let volumeCredits = 0;
-
-  for (let perf of invoice.performances) {
-    const play = getPlay(plays, perf);
-    let thisAmount = calculateAmount(play.type, perf);
-    totalAmount += thisAmount;
-    volumeCredits = getVolumeCredits(volumeCredits, perf, play);
-    //print line for this order
-    result = getPerfAmount(result, play, thisAmount, perf);
-  }
-  result += `Amount owed is ${formatAmount(calculateTotalAmount(invoice.performances, plays))}\n`;
-  result += `You earned ${calculateVolumeCredits(invoice.performances, plays)} credits \n`;
-  return result;
+  // let result = `Statement for ${invoice.customer}\n`;
+  // result += getPerfAmount(invoice.performances, plays);
+  // result += `Amount owed is ${formatAmount(calculateTotalAmount(invoice.performances, plays))}\n`;
+  // result += `You earned ${calculateVolumeCredits(invoice.performances, plays)} credits \n`;
+  return printString(getStatementResult(invoice, plays));
 }
 
 module.exports = {
