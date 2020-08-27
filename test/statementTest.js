@@ -119,3 +119,74 @@ test('the audience of hamlet is 31 test', t => {
   );
 });
 
+test('the audience of hamlet is 29 test', t => {
+  //given
+  const invoice = {
+    'customer': 'BigCo',
+    'performances': [
+      {
+        'playID': 'hamlet',
+        'audience': 29,
+      }
+    ],
+  };
+  const plays = {
+    'hamlet': {
+      'name': 'Hamlet',
+      'type': 'tragedy',
+    },
+    'as-like': {
+      'name': 'As You Like It',
+      'type': 'comedy',
+    },
+    'othello': {
+      'name': 'Othello',
+      'type': 'tragedy',
+    },
+  };
+  //when
+  const result = statement(invoice, plays);
+  //then
+  t.is(result, 'Statement for BigCo\n' +
+      ' Hamlet: $400.00 (29 seats)\n' +
+      'Amount owed is $400.00\n' +
+      'You earned 0 credits \n'
+  );
+});
+
+test('the audience of as-like is 19 test', t => {
+  //given
+  const invoice = {
+    'customer': 'BigCo',
+    'performances': [
+      {
+        'playID': 'as-like',
+        'audience': 19,
+      }
+    ],
+  };
+  const plays = {
+    'hamlet': {
+      'name': 'Hamlet',
+      'type': 'tragedy',
+    },
+    'as-like': {
+      'name': 'As You Like It',
+      'type': 'comedy',
+    },
+    'othello': {
+      'name': 'Othello',
+      'type': 'tragedy',
+    },
+  };
+  //when
+  const result = statement(invoice, plays);
+  //then
+  t.is(result, 'Statement for BigCo\n' +
+      ' As You Like It: $357.00 (19 seats)\n' +
+      'Amount owed is $357.00\n' +
+      'You earned 3 credits \n'
+  );
+});
+
+
