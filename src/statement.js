@@ -59,6 +59,16 @@ function calculateVolumeCredits(performances, plays) {
   return volumeCredits
 }
 
+function calculateTotalAmount(performances, plays) {
+  let totalAmount = 0;
+  for (let perf of performances) {
+    const play = getPlay(plays, perf);
+    let thisAmount = calculateAmount(play.type, perf);
+    totalAmount += thisAmount;
+  }
+  return totalAmount;
+}
+
 function getPerfAmount(result, play, thisAmount, perf) {
   result += ` ${play.name}: ${formatAmount(thisAmount)} (${perf.audience} seats)\n`;
   return result;
@@ -77,7 +87,7 @@ function statement (invoice, plays) {
     //print line for this order
     result = getPerfAmount(result, play, thisAmount, perf);
   }
-  result += `Amount owed is ${formatAmount(totalAmount)}\n`;
+  result += `Amount owed is ${formatAmount(calculateTotalAmount(invoice.performances, plays))}\n`;
   result += `You earned ${calculateVolumeCredits(invoice.performances, plays)} credits \n`;
   return result;
 }
