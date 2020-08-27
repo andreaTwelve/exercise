@@ -14,13 +14,17 @@ function getVolumeCredits(volumeCredits, perf, play) {
   return volumeCredits;
 }
 
+function getPlay(plays, perf) {
+  return plays[perf.playID];
+}
+
 function statement (invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = `Statement for ${invoice.customer}\n`;
 
   for (let perf of invoice.performances) {
-    const play = plays[perf.playID];
+    const play = getPlay(plays, perf);
     let thisAmount = 0;
     switch (play.type) {
       case 'tragedy':
@@ -39,11 +43,10 @@ function statement (invoice, plays) {
       default:
         throw new Error(`unknown type: ${play.type}`);
     }
-    // add volume credits
     volumeCredits = getVolumeCredits(volumeCredits, perf, play);
+    totalAmount += thisAmount;
     //print line for this order
     result += ` ${play.name}: ${formatAmount(thisAmount)} (${perf.audience} seats)\n`;
-    totalAmount += thisAmount;
   }
   result += `Amount owed is ${formatAmount(totalAmount)}\n`;
   result += `You earned ${volumeCredits} credits \n`;
